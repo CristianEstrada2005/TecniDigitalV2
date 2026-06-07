@@ -119,7 +119,7 @@ function App() {
       id: 1,
       name: 'RAM DDR4 16GB',
       category: 'Memoria',
-      price: '$85.000',
+      price: '',
       image: 'https://m.media-amazon.com/images/I/61Iot1pLVDL._AC_UF894,1000_QL80_.jpg',
       specs: 'Velocidad 3200MHz, Compatible múltiples marcas',
       status: 'En stock',
@@ -129,7 +129,7 @@ function App() {
       id: 2,
       name: 'SSD NVMe 1TB',
       category: 'Almacenamiento',
-      price: '$120.000',
+      price: '',
       image: 'https://i.blogs.es/c4d3c2/samsung-ssd-vnand/450_1000.jpg',
       specs: 'Velocidad 3500MB/s, PCIe 4.0',
       status: 'En stock',
@@ -139,7 +139,7 @@ function App() {
       id: 3,
       name: 'Placa Madre B550',
       category: 'Placa Base',
-      price: '$165.000',
+      price: '',
       image: 'https://http2.mlstatic.com/D_NQ_NP_995519-MLA99961602999_112025-O.webp',
       specs: 'Socket AM4, PCIe 4.0, BIOS actualizado',
       status: 'En stock',
@@ -149,7 +149,7 @@ function App() {
       id: 4,
       name: 'GPU RTX 3060 12GB',
       category: 'Gráficos',
-      price: '$520.000',
+      price: '',
       image: 'https://http2.mlstatic.com/D_NQ_NP_867602-MCO90390719454_082025-O.webp',
       specs: 'CUDA Cores: 3584, GDDR6, Ray Tracing',
       status: 'En stock',
@@ -159,7 +159,7 @@ function App() {
       id: 5,
       name: 'Procesador Ryzen 5 5600X',
       category: 'CPU',
-      price: '$380.000',
+      price: '',
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGdtka57pjGOwXKm0xYkHHBQRA6BGP3BL9_w&s',
       specs: '6 núcleos, 12 hilos, 4.6GHz boost',
       status: 'En stock',
@@ -169,7 +169,7 @@ function App() {
       id: 6,
       name: 'Fuente 750W 80+ Gold',
       category: 'Fuente',
-      price: '$125.000',
+      price: '',
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOBgFpq1jaeyLRE95tZyGdRul-b4ExlwXNNQ&s',
       specs: '750W, Modular, Certificación 80+ Gold',
       status: 'En stock',
@@ -268,7 +268,7 @@ function App() {
               {/* Price */}
               <div className="flex items-center justify-between mb-6 p-4 bg-cyan/5 rounded-xl border border-cyan/20">
                 <div>
-                  <span className="text-xs text-gray-500 uppercase tracking-wider">Precio desde</span>
+                  
                   <span className="block text-3xl font-bold text-gradient">{selectedComponent.price}</span>
                 </div>
                 <div className="text-right">
@@ -496,7 +496,7 @@ function App() {
                     {/* Price */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                       <div>
-                        <span className="text-xs text-gray-500">Precio desde</span>
+                          
                         <span className="block text-2xl font-bold text-gradient">{component.price}</span>
                       </div>
                       <button
