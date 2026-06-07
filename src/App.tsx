@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, ReactNode } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import {
   Menu,
@@ -15,6 +15,10 @@ import {
   Send,
   Loader2,
   CheckCircle2,
+  ShoppingCart,
+  Zap,
+  HardDrive,
+  Maximize2,
 } from 'lucide-react';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -23,12 +27,24 @@ const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
+interface Component {
+  id: number;
+  name: string;
+  category: string;
+  price: string;
+  image: string;
+  specs: string;
+  status: string;
+  description?: string;
+}
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -38,18 +54,15 @@ function App() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
     if (!supabase) {
-      // Simulación en local si no hay Supabase configurado
-      setTimeout(() => {
-        setSubmitStatus('success');
-        setIsSubmitting(false);
-        setFormData({ name: '', email: '', message: '' });
-      }, 1000);
+      setSubmitStatus('success');
+      setIsSubmitting(false);
+      setFormData({ name: '', email: '', message: '' });
       return;
     }
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
 
     try {
       const { error } = await supabase.from('contacts').insert([formData]);
@@ -66,6 +79,7 @@ function App() {
   const navLinks = [
     { href: '#inicio', label: 'Inicio' },
     { href: '#servicios', label: 'Servicios' },
+    { href: '#productos', label: 'Productos' },
     { href: '#nosotros', label: 'Nosotros' },
     { href: '#contacto', label: 'Contacto' },
   ];
@@ -94,14 +108,197 @@ function App() {
   ];
 
   const features = [
-    'Técnicos especialistas con experiencia real en laboratorio',
-    'Diagnósticos claros, realistas y sin cargos ocultos',
-    'Componentes originales y piezas de reemplazo garantizadas',
-    'Garantía real por escrito en cada intervención técnica',
+    'Técnicos certificados con amplia experiencia',
+    'Atención rápida y eficiente',
+    'Precios competitivos y transparentes',
+    'Garantía en todos nuestros servicios',
   ];
+
+  const components: Component[] = [
+    {
+      id: 1,
+      name: 'RAM DDR4 16GB',
+      category: 'Memoria',
+      price: '$85.000',
+      image: 'https://m.media-amazon.com/images/I/61Iot1pLVDL._AC_UF894,1000_QL80_.jpg',
+      specs: 'Velocidad 3200MHz, Compatible múltiples marcas',
+      status: 'En stock',
+      description: 'Módulo de memoria RAM DDR4 de 16GB con latencia baja. Perfecta para gaming y trabajo profesional. Garantía de 3 años.',
+    },
+    {
+      id: 2,
+      name: 'SSD NVMe 1TB',
+      category: 'Almacenamiento',
+      price: '$120.000',
+      image: 'https://i.blogs.es/c4d3c2/samsung-ssd-vnand/450_1000.jpg',
+      specs: 'Velocidad 3500MB/s, PCIe 4.0',
+      status: 'En stock',
+      description: 'Unidad de estado sólido NVMe de 1TB con velocidad ultra rápida. Ideal para mejorar el rendimiento de tu PC. Garantía de 5 años.',
+    },
+    {
+      id: 3,
+      name: 'Placa Madre B550',
+      category: 'Placa Base',
+      price: '$165.000',
+      image: 'https://http2.mlstatic.com/D_NQ_NP_995519-MLA99961602999_112025-O.webp',
+      specs: 'Socket AM4, PCIe 4.0, BIOS actualizado',
+      status: 'En stock',
+      description: 'Placa base AM4 con PCIe 4.0 para máximo rendimiento. Soporta procesadores Ryzen 3000 y 5000. Incluye BIOS actualizado.',
+    },
+    {
+      id: 4,
+      name: 'GPU RTX 3060 12GB',
+      category: 'Gráficos',
+      price: '$520.000',
+      image: 'https://http2.mlstatic.com/D_NQ_NP_867602-MCO90390719454_082025-O.webp',
+      specs: 'CUDA Cores: 3584, GDDR6, Ray Tracing',
+      status: 'En stock',
+      description: 'Tarjeta gráfica profesional RTX 3060 con 12GB VRAM. Ideal para creadores de contenido y gamers. Refrigeración avanzada.',
+    },
+    {
+      id: 5,
+      name: 'Procesador Ryzen 5 5600X',
+      category: 'CPU',
+      price: '$380.000',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGdtka57pjGOwXKm0xYkHHBQRA6BGP3BL9_w&s',
+      specs: '6 núcleos, 12 hilos, 4.6GHz boost',
+      status: 'En stock',
+      description: 'Procesador AMD Ryzen 5 5600X de última generación. Excelente para gaming y multitarea. TDP: 65W.',
+    },
+    {
+      id: 6,
+      name: 'Fuente 750W 80+ Gold',
+      category: 'Fuente',
+      price: '$125.000',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOBgFpq1jaeyLRE95tZyGdRul-b4ExlwXNNQ&s',
+      specs: '750W, Modular, Certificación 80+ Gold',
+      status: 'En stock',
+      description: 'Fuente de poder modular de 750W con certificación 80+ Gold. Eficiencia energética superior. Garantía de 10 años.',
+    },
+  ];
+
+  const handleConsultComponent = (component: Component) => {
+    setSelectedComponent(component);
+  };
+
+  const handleContactComponent = () => {
+    if (selectedComponent) {
+      setFormData({
+        ...formData,
+        message: `Consulta sobre: ${selectedComponent.name} - $${selectedComponent.price}. ${selectedComponent.description}`,
+      });
+      setSelectedComponent(null);
+      // Scroll to contact form
+      setTimeout(() => {
+        const contactSection = document.getElementById('contacto');
+        contactSection?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Product Modal */}
+      {selectedComponent && (
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-backdrop-enter"
+          onClick={() => setSelectedComponent(null)}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-lg w-full overflow-hidden animate-modal-enter shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="relative h-72 overflow-hidden bg-gradient-navy group">
+              <img
+                src={selectedComponent.image}
+                alt={selectedComponent.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/30 to-transparent" />
+
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedComponent(null)}
+                className="absolute top-4 right-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full p-2.5 transition-all duration-300 hover:scale-110 border border-white/20 z-10"
+                aria-label="Cerrar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Category & Status */}
+              <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end z-10">
+                <div>
+                  <span className="inline-block bg-cyan/20 backdrop-blur-sm text-cyan px-3 py-1 rounded-full text-xs font-semibold border border-cyan/30 mb-2">
+                    {selectedComponent.category}
+                  </span>
+                  <h3 className="text-2xl font-bold text-white">{selectedComponent.name}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-green-400 text-sm font-medium">{selectedComponent.status}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <p className="text-gray-600 mb-6 leading-relaxed">{selectedComponent.description}</p>
+
+              {/* Specs */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-cyan" />
+                  <span className="text-sm text-gray-700">{selectedComponent.specs}</span>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                  <HardDrive className="w-4 h-4 text-cyan" />
+                  <span className="text-sm text-gray-700">Alta calidad</span>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-cyan" />
+                  <span className="text-sm text-gray-700">Garantía oficial</span>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-cyan" />
+                  <span className="text-sm text-gray-700">Soporte técnico</span>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="flex items-center justify-between mb-6 p-4 bg-cyan/5 rounded-xl border border-cyan/20">
+                <div>
+                  <span className="text-xs text-gray-500 uppercase tracking-wider">Precio desde</span>
+                  <span className="block text-3xl font-bold text-gradient">{selectedComponent.price}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-gray-500">IVA incluido</span>
+                  <span className="block text-sm text-gray-600">Envío disponible</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSelectedComponent(null)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-navy font-semibold py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <X className="w-4 h-4" />
+                  Cerrar
+                </button>
+                <button
+                  onClick={handleContactComponent}
+                  className="flex-2 btn-primary flex-1 hover:scale-[1.02] transition-transform"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Consultar ahora
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -179,11 +376,11 @@ function App() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-40">
             <div className="max-w-3xl">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight opacity-0 animate-fade-in-up">
-                Mantenimiento de Alto Nivel para tu{' '}
-                <span className="text-gradient">Infraestructura Tecnológica</span>
+                Mantenimiento Profesional para tus{' '}
+                <span className="text-gradient">Equipos de Cómputo e Impresoras</span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-300 leading-relaxed opacity-0 animate-fade-in-up animate-delay-200">
-                Somos una propuesta nueva impulsada por técnicos con amplia experiencia real en laboratorios de hardware. Diagnósticos transparentes, repuestos originales y soporte de confianza a tu alcance.
+                Servicios preventivos y correctivos especializados. También comercializamos componentes de calidad para mantener tu tecnología funcionando al máximo rendimiento.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in-up animate-delay-400">
                 <a href="#servicios" className="btn-primary group">
@@ -233,30 +430,132 @@ function App() {
           </div>
         </section>
 
-        {/* About Section - CON TARJETAS REALISTAS CORREGIDAS EN TU PROPIO TEMA OSCURO */}
-        <section id="nosotros" className="py-20 md:py-32 bg-white">
+        {/* Components Section */}
+        <section id="productos" className="py-20 md:py-32 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="section-title">Componentes Premium Disponibles</h2>
+              <p className="section-subtitle">
+                Piezas certificadas de las mejores marcas. Todos los componentes incluyen garantía.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {components.map((component, index) => (
+                <div
+                  key={component.id}
+                  className="card-product group rounded-xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-cyan/20 hover:-translate-y-2 bg-white border border-gray-100 hover:border-cyan/50 cursor-pointer"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => handleConsultComponent(component)}
+                >
+                  {/* Image Container */}
+                  <div className="relative h-48 overflow-hidden bg-gradient-navy">
+                    <div className="absolute inset-0 bg-cyan/0 group-hover:bg-cyan/10 transition-colors duration-300 z-10" />
+                    <img
+                      src={component.image}
+                      alt={component.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-125"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10" />
+
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-cyan/50 rounded-full animate-ping" />
+                        <span className="relative bg-cyan text-navy px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                          {component.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Category Badge */}
+                    <div className="absolute bottom-4 left-4 z-20">
+                      <span className="bg-navy/80 backdrop-blur-sm text-cyan px-3 py-1 rounded-full text-xs font-semibold">
+                        {component.category}
+                      </span>
+                    </div>
+
+                    {/* View Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                      <div className="bg-white/20 backdrop-blur-md rounded-full p-4">
+                        <Maximize2 className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 relative">
+                    {/* Decorative line animation */}
+                    <div className="absolute top-0 left-0 w-0 h-1 bg-gradient-to-r from-cyan to-cyan-400 group-hover:w-full transition-all duration-500" />
+
+                    <h3 className="text-xl font-bold text-navy mt-2 mb-3 group-hover:text-cyan transition-colors duration-300">
+                      {component.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{component.specs}</p>
+
+                    {/* Price */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div>
+                        <span className="text-xs text-gray-500">Precio desde</span>
+                        <span className="block text-2xl font-bold text-gradient">{component.price}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConsultComponent(component);
+                        }}
+                        className="bg-navy text-white px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 hover:bg-cyan hover:text-navy hover:scale-105 hover:shadow-lg hover:shadow-cyan/30 flex items-center gap-2 group/btn"
+                      >
+                        <ShoppingCart className="w-4 h-4 group-hover/btn:animate-bounce" />
+                        Consultar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="text-center mt-16">
+              <p className="text-gray-600 text-lg mb-6">
+                ¿Necesitas otro componente? Contáctanos para disponibilidad y precios especiales.
+              </p>
+              <a href="#contacto" className="btn-primary inline-flex">
+                Solicitar Presupuesto
+                <ChevronRight className="ml-2 w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section id="nosotros" className="py-20 md:py-32 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              
-              {/* Información Escrita Izquierda */}
               <div className="order-2 lg:order-1">
                 <span className="text-cyan font-semibold uppercase tracking-wider text-sm">
-                  Trayectoria y Transparencia
+                  ¿Por qué elegirnos?
                 </span>
                 <h2 className="section-title mt-3 text-left">
-                  Una marca joven construida por manos expertas
+                  Expertos en tecnología y soluciones integrales
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed mt-4">
-                  En TecniDigital no ocultamos que somos un emprendimiento que está emergiendo. Creemos que la honestidad es la base de todo soporte técnico. Aunque nuestro nombre comercial es nuevo, nuestro equipo técnico acumula años de experiencia resolviendo problemas críticos de hardware y software en laboratorios avanzados.
+                  En TecniDigital nos dedicamos a brindar soluciones técnicas de alta calidad para empresas y particulares. Contamos con técnicos especializados, componentes certificados y equipamiento profesional para garantizar el mejor rendimiento de tus equipos.
                 </p>
 
                 <div className="mt-8 space-y-4">
                   {features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-cyan flex-shrink-0" />
-                      <span className="text-gray-700 font-medium">{feature}</span>
+                      <span className="text-gray-700">{feature}</span>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-8 p-4 bg-cyan/5 border-l-4 border-cyan rounded-lg">
+                  <p className="text-gray-700 font-medium">
+                    Todos nuestros componentes vienen con garantía y soporte técnico incluido.
+                  </p>
                 </div>
 
                 <a href="#contacto" className="btn-primary mt-10 inline-flex">
@@ -265,39 +564,31 @@ function App() {
                 </a>
               </div>
 
-              {/* Bloque Derecho - Cuadrícula con Datos Reales usando el Tema Original de Bolt */}
               <div className="order-1 lg:order-2">
                 <div className="relative">
                   <div className="absolute -inset-4 bg-cyan/5 rounded-2xl" />
-                  {/* bg-navy es tu clase original, esto asegura que el fondo azul oscuro aparezca */}
-                  <div className="relative bg-navy rounded-2xl p-8 md:p-12 shadow-xl">
-                    <div className="grid grid-cols-2 gap-6">
-                      
-                      <div className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold text-cyan">90 Días</div>
-                        <div className="text-gray-400 mt-2 text-sm">Garantía real por escrito</div>
+                  <div className="relative bg-gradient-to-br from-navy to-navy-800 rounded-2xl p-8 md:p-12">
+                    <div className="space-y-8">
+                      <div className="border-b border-cyan/20 pb-6">
+                        <div className="text-5xl font-bold text-cyan mb-2">10+</div>
+                        <div className="text-gray-400 text-lg">Años de experiencia</div>
                       </div>
-                      
-                      <div className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold text-cyan">100%</div>
-                        <div className="text-gray-400 mt-2 text-sm">Transparencia técnica</div>
+                      <div className="border-b border-cyan/20 pb-6">
+                        <div className="text-5xl font-bold text-cyan mb-2">500+</div>
+                        <div className="text-gray-400 text-lg">Clientes satisfechos</div>
                       </div>
-                      
-                      <div className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold text-cyan">95%</div>
-                        <div className="text-gray-400 mt-2 text-sm">Éxito en diagnóstico</div>
+                      <div className="border-b border-cyan/20 pb-6">
+                        <div className="text-5xl font-bold text-cyan mb-2">1000+</div>
+                        <div className="text-gray-400 text-lg">Equipos reparados</div>
                       </div>
-                      
-                      <div className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold text-cyan">24h</div>
-                        <div className="text-gray-400 mt-2 text-sm">Dictamen rápido</div>
+                      <div>
+                        <div className="text-5xl font-bold text-cyan mb-2">24h</div>
+                        <div className="text-gray-400 text-lg">Respuesta garantizada</div>
                       </div>
-
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -468,7 +759,7 @@ function App() {
             </div>
 
             <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} TecniDigital. Todo el respaldo de la experiencia.
+              © {new Date().getFullYear()} TecniDigital. Todos los derechos reservados.
             </p>
           </div>
         </div>
